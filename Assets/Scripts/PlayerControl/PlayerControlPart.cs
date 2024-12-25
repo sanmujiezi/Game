@@ -4,7 +4,7 @@ using UnityEngine;
 
 public partial class PlayerControl :IController
 {
-    private PlayerCountModel _model;
+    private PlayerDataModel _model;
     private void Start()
     {
         Init();
@@ -12,7 +12,7 @@ public partial class PlayerControl :IController
 
     private void Init()
     {
-        _model = this.GetModel<PlayerCountModel>();
+        _model = this.GetModel<PlayerDataModel>();
         
         this.RegisterEvent<TraggerInteractEvent>(e =>
         {
@@ -20,7 +20,7 @@ public partial class PlayerControl :IController
             _model.count.Value++;
         });
         
-        this.GetModel<PlayerCountModel>().count.Register(e =>
+        this.GetModel<PlayerDataModel>().count.Register(e =>
         {
             Debug.Log("Count:" + e);
         }).UnRegisterWhenGameObjectDestroyed(gameObject);
@@ -36,7 +36,7 @@ public class PlayerControlArchitecture : Architecture<PlayerControlArchitecture>
 {
     protected override void Init()
     {
-        RegisterModel(new PlayerCountModel());
+        RegisterModel(new PlayerDataModel());
         RegisterSystem(new PlayerCountSystem());
         
     }
@@ -51,14 +51,27 @@ public class PlayerCountSystem : AbstractSystem
     }
 }
 
-public class PlayerCountModel : AbstractModel
+public class PlayerDataModel : AbstractModel
 {
     public BindableProperty<int> count;
+
+    public BindableProperty<float> packageMax;
     protected override void OnInit()
     {
-        if (count ==null)
+        
+        if (count == null)
         {
             count = new BindableProperty<int>();
         }
+
+        count.Register(e =>
+        {
+            if (e<0)
+            {
+                count.Value = 0;
+            }
+        });
+        
+        packageMax = new BindableProperty<float>(10);
     }
 }
