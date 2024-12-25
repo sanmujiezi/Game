@@ -42,6 +42,7 @@ public class SpawnControl : MonoBehaviour
         random = new Random();
 
         int count = 0;
+        
         for (int i = 0; i < objectCount; i++)
         {
             count++;
@@ -51,6 +52,7 @@ public class SpawnControl : MonoBehaviour
             var objectInstance = Instantiate(objectPrefab, spawnPos, Quaternion.identity, objectRoot);
             objects.Add(objectInstance);
         }
+        
         Debug.Log($"加载完成，共生成 {count} 个物体");
     }
 

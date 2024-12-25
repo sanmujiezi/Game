@@ -12,7 +12,7 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
-        UIManager.Instance.GetPanel<GamePlayView>();
+        UIManager.Instance.ShowPanel<GamePlayView>();
     }
 
     // Update is called once per frame

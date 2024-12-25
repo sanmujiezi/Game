@@ -1,36 +1,51 @@
-﻿
-    using QFramework;
-    using UnityEngine.UI;
+﻿using QFramework;
+using TMPro;
+using UnityEngine;
+using UnityEngine.UI;
 
-    public class GamePlayView : BasePanel,IController
+public class GamePlayView : BasePanel, IController
+{
+    private Slider m_slider;
+    private Text m_sliderText;
+
+    private PlayerDataModel _model;
+
+    public override void Init()
     {
-        private Slider packageSlider;
-        private PlayerDataModel _model;
-        public override void Init()
+        m_slider = transform.GetChild(0).Find("m_Slider").GetComponent<Slider>();
+        m_sliderText = transform.GetChild(0).Find("m_SliderText").GetComponent<Text>();
+        _model = this.GetModel<PlayerDataModel>();
+
+        _model.count.Register(e =>
         {
-            packageSlider = transform.Find("m_Slider").GetComponent<Slider>();
-            _model = this.GetModel<PlayerDataModel>();
+            UpdatePackageSlider(e);
+            UpdatePackageText(e, _model.packageMax.Value);
+        });
 
-            _model.count.Register(UpdatePackageSlider);
-        }
-
-
-        private void UpdatePackageSlider(int progress)
-        {
-            if (progress <= _model.packageMax.Value && progress > 0)
-            {
-                packageSlider.value = progress/ _model.packageMax.Value;
-            }
-            else if (progress<0)
-            {
-                progress = 0;
-                packageSlider.value = progress;
-            }
-        }
-
-
-        public IArchitecture GetArchitecture()
-        {
-            return PlayerControlArchitecture.Interface;
-        }
+        UpdatePackageSlider(_model.count.Value);
+        UpdatePackageText(_model.count.Value, _model.packageMax.Value);
     }
+
+
+    private void UpdatePackageSlider(int progress)
+    {
+        float value = progress / (float)_model.packageMax.Value;
+        if (value < 0)
+        {
+            value = 0;
+        }
+        m_slider.value = value;
+    }
+
+    private void UpdatePackageText(int progress, int max)
+    {
+        string content = progress + " / " + max;
+        m_sliderText.text = content;
+    }
+
+
+    public IArchitecture GetArchitecture()
+    {
+        return PlayerControlArchitecture.Interface;
+    }
+}
